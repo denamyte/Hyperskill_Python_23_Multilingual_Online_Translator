@@ -1,8 +1,19 @@
+from menus import Menus
+from queries import ReversoQueries
+
+
 def main():
-    lang = input('Type "en" if you want to translate from French into English,'
-                 ' or "fr" if you want to translate from English into French:\n')
-    word = input('Type the word you want to translate:\n')
-    print(f'You chose "{lang}" as the language to translate "{word}" to.')
+    menus = Menus()
+    queries = ReversoQueries()
+
+    menus.choose_lang()
+    menus.choose_word()
+    menus.confirm_chosen()
+
+    queries.make_query(menus.data)
+    menus.confirm_query()
+    res = queries.parse_response()
+    menus.print_translation(res)
 
 
 if __name__ == '__main__':

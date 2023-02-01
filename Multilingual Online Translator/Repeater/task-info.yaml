@@ -46,9 +46,18 @@ files:
     if __name__ == '__main__':
         TranslatorTest('translator.translator').run_tests()
   learner_created: false
+- name: translator/menus.py
+  visible: true
+  learner_created: true
+- name: translator/queries.py
+  visible: true
+  learner_created: true
+- name: translator/data.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8970#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: "Wed, 01 Feb 2023 14:08:24 UTC"
-record: -1
+record: 1
