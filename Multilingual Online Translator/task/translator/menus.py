@@ -28,7 +28,3 @@ class Menus:
         """ Returns the translation data (language, word) """
         lang_from = 'en' if self._lang_to == 'fr' else 'fr'
         return TranslationData(lang_from, self._lang_to, self._word)
-
-    @staticmethod
-    def print_translation(result: TranslationResult):
-        print('Translations', *dataclasses.astuple(result), sep='\n')

@@ -1,5 +1,5 @@
 from dataclasses import  dataclass
-from typing import List
+from typing import List, Dict, Tuple
 
 
 @dataclass
@@ -11,5 +11,16 @@ class TranslationData:
 
 @dataclass
 class TranslationResult:
-    terms: List[str]
-    sentences: List[str]
+    target_lang: str
+    words: List[str]
+    examples: List[Tuple[str, str]]
+
+    def __str__(self):
+        words = '\n'.join(w for w in self.words[:5])
+        examples = '\n\n'.join(f'{s1}\n{s2}' for s1, s2 in self.examples[:5])
+        return f"""
+{self.target_lang} Translations:
+{words}
+
+{self.target_lang} Examples:
+{examples}"""

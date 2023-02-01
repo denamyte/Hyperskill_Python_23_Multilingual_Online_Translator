@@ -13,7 +13,7 @@ def main():
     queries.make_query(menus.data)
     menus.confirm_query()
     res = queries.parse_response()
-    menus.print_translation(res)
+    print(res)
 
 
 if __name__ == '__main__':
