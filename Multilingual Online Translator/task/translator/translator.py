@@ -1,19 +1,18 @@
 from menus import Menus
-from queries import ReversoQueries
+from queries import ReversoQuery
+from data import TranslationData
 
 
 def main():
     menus = Menus()
-    queries = ReversoQueries()
 
-    menus.choose_lang()
-    menus.choose_word()
-    menus.confirm_chosen()
-
-    queries.make_query(menus.data)
-    menus.confirm_query()
-    res = queries.parse_response()
-    print(res)
+    menus.welcome()
+    tr_data = TranslationData(
+        src_lang=menus.choose_first_lang(),
+        trg_lang=menus.choose_second_lang(),
+        word=menus.choose_word()
+    )
+    print(ReversoQuery().get_translation(tr_data))
 
 
 if __name__ == '__main__':

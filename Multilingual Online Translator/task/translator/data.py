@@ -1,11 +1,11 @@
-from dataclasses import  dataclass
-from typing import List, Dict, Tuple
+from dataclasses import dataclass
+from typing import List, Tuple
 
 
 @dataclass
 class TranslationData:
-    lang_from: str
-    lang_to: str
+    src_lang: str
+    trg_lang: str
     word: str
 
 

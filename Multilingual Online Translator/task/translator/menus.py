@@ -1,30 +1,31 @@
-import dataclasses
+from data import TranslationData
 
-from data import TranslationData, TranslationResult
+LANGUAGES = ['arabic', 'german', 'english', 'spanish', 'french', 'hebrew',
+             'japanese', 'dutch', 'polish', 'portuguese', 'romanian',
+             'russian', 'turkish']
 
 
 class Menus:
     def __init__(self):
-        self._lang_to = ''
-        self._word = ''
-
-    def choose_lang(self) -> str:
-        self._lang_to = input(
-            'Type "en" if you want to translate from French into English,'
-            ' or "fr" if you want to translate from English into French:\n')
-
-    def choose_word(self) -> str:
-        self._word = input('Type the word you want to translate:\n')
-
-    def confirm_chosen(self):
-        print(f'You chose "{self._lang_to}" as the language to translate "{self._word}" to.')
+        ...
 
     @staticmethod
-    def confirm_query():
-        print('200 OK')
+    def welcome():
+        print('Hello, welcome to the translator. Translator supports: ')
+        print(*(f'{i}. {lang.capitalize()}' for i, lang
+                in enumerate(LANGUAGES, start=1)), sep='\n')
 
-    @property
-    def data(self) -> TranslationData:
-        """ Returns the translation data (language, word) """
-        lang_from = 'en' if self._lang_to == 'fr' else 'fr'
-        return TranslationData(lang_from, self._lang_to, self._word)
+    def choose_first_lang(self) -> str:
+        return self._choose_lang('Type the number of your language:\n')
+
+    def choose_second_lang(self) -> str:
+        return self._choose_lang('Type the number of language you want '
+                                 'to translate to:\n')
+
+    @staticmethod
+    def _choose_lang(text: str) -> str:
+        return LANGUAGES[-1 + int(input(text))]
+
+    @staticmethod
+    def choose_word() -> str:
+        return input('Type the word you want to translate:\n')
