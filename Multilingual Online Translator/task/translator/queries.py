@@ -9,15 +9,14 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
 
 class ReversoQuery:
-    def __init__(self, src_l: str, trg_l: str, word: str, limit: int):
-        self._src_l = src_l
-        self._trg_l = trg_l
-        self._word = word
+    def __init__(self, tr_data: TranslationData, limit: int):
+        self._d = tr_data
         self._limit = limit
+        self._trg_l = ''
 
     def _form_url(self) -> str:
-        return f'https://context.reverso.net/translation/{self._src_l}-' \
-               f'{self._trg_l}/{self._word}'
+        return f'https://context.reverso.net/translation/{self._d.src_l}-' \
+               f'{self._trg_l}/{self._d.word}'
 
     def _make_query(self) -> requests.Response:
         url = self._form_url()
@@ -36,14 +35,16 @@ class ReversoQuery:
         ex_tuples = list(zip(examples[::4], examples[1::4]))
         return TranslationResult(self._trg_l.capitalize(), words, ex_tuples)
 
-    def get_translation(self) -> TranslationResult:
-        resp = self._make_query()
-        return self._parse_response(resp)
+    def _get_translation(self, trg_l):
+        self._trg_l = trg_l
+        return self._parse_response(self._make_query())
+
+    def get_translations(self) -> TranslationResults:
+        return TranslationResults(
+           [self._get_translation(trg_l) for trg_l in self._d.trg_ls]
+        )
 
 
 def make_queries(tr_data: TranslationData):
-    limit = 5 if len(tr_data.trg_l) == 1 else 1
-    return TranslationResults(
-        [ReversoQuery(tr_data.src_l, tr_data.trg_l[i], tr_data.word, limit).
-         get_translation() for i in range(len(tr_data.trg_l))]
-    )
+    limit = 5 if len(tr_data.trg_ls) == 1 else 1
+    return ReversoQuery(tr_data, limit).get_translations()

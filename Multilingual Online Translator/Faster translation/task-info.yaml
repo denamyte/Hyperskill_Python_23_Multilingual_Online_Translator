@@ -180,44 +180,6 @@ files:
     if __name__ == '__main__':
         TranslatorTest('translator.translator').run_tests()
   learner_created: false
-- name: translator/menus.py
-  visible: true
-  text: |
-    from typing import List, Set
-
-    # LANGUAGES = ['arabic', 'german', 'english', 'spanish', 'french', 'hebrew',
-    #              'japanese', 'dutch', 'polish', 'portuguese', 'romanian',
-    #              'russian', 'turkish']
-    # WELCOME_MSG = 'Hello, welcome to the translator. Translator supports: '
-    # SRC_LANG_PROMPT = 'Type the number of your language:\n'
-    # TRG_LANG_PROMPT = 'Type the number of a language you want to translate to ' \
-    #                   'or \'0\' to translate to all languages:\n'
-    # CHOOSE_WORD_PROMPT = 'Type the word you want to translate:\n'
-    #
-    #
-    # class Menus:
-    #     @staticmethod
-    #     def welcome():
-    #         print(WELCOME_MSG)
-    #         print(*(f'{i}. {lang.capitalize()}' for i, lang
-    #                 in enumerate(LANGUAGES, start=1)), sep='\n')
-    #
-    #     @staticmethod
-    #     def choose_src_lang() -> str:
-    #         return LANGUAGES[int(input(SRC_LANG_PROMPT)) - 1]
-    #
-    #     @staticmethod
-    #     def choose_trg_langs(exclude='') -> List[str]:
-    #         i = int(input(TRG_LANG_PROMPT))
-    #         langs = [LANGUAGES[i - 1]] if i > 0 else LANGUAGES[:]
-    #         if exclude in langs:
-    #             langs.remove(exclude)
-    #         return langs
-    #
-    #     @staticmethod
-    #     def choose_word() -> str:
-    #         return input(CHOOSE_WORD_PROMPT)
-  learner_created: true
 - name: translator/queries.py
   visible: true
   text: |
@@ -338,5 +300,5 @@ feedback_link: https://hyperskill.org/learn/step/8975#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: "Fri, 03 Feb 2023 20:13:35 UTC"
+  time: "Fri, 03 Feb 2023 20:35:23 UTC"
 record: -1

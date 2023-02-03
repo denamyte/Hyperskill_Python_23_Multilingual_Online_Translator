@@ -5,7 +5,7 @@ from typing import List, Tuple
 @dataclass
 class TranslationData:
     src_l: str
-    trg_l: List[str]
+    trg_ls: List[str]
     word: str
 
 
