@@ -184,6 +184,119 @@ files:
     if __name__ == '__main__':
         TranslatorTest('translator.translator').run_tests()
   learner_created: false
+- name: translator/menus.py
+  visible: true
+  text: |
+    from data import TranslationData
+
+    LANGUAGES = ['arabic', 'german', 'english', 'spanish', 'french', 'hebrew',
+                 'japanese', 'dutch', 'polish', 'portuguese', 'romanian',
+                 'russian', 'turkish']
+
+
+    class Menus:
+        def __init__(self):
+            ...
+
+        @staticmethod
+        def welcome():
+            print('Hello, welcome to the translator. Translator supports: ')
+            print(*(f'{i}. {lang.capitalize()}' for i, lang
+                    in enumerate(LANGUAGES, start=1)), sep='\n')
+
+        def choose_first_lang(self) -> str:
+            return self._choose_lang('Type the number of your language:\n')
+
+        def choose_second_lang(self) -> str:
+            return self._choose_lang('Type the number of language you want '
+                                     'to translate to:\n')
+
+        @staticmethod
+        def _choose_lang(text: str) -> str:
+            return LANGUAGES[-1 + int(input(text))]
+
+        @staticmethod
+        def choose_word() -> str:
+            return input('Type the word you want to translate:\n')
+  learner_created: true
+- name: translator/queries.py
+  visible: true
+  text: |
+    import time
+    import requests
+    from bs4 import BeautifulSoup
+    from data import TranslationData, TranslationResult
+
+    HEADERS = {'User-Agent': 'Mozilla/5.0'}
+
+
+    class ReversoQuery:
+        @staticmethod
+        def _form_url(tr_data: TranslationData) -> str:
+            return f'https://context.reverso.net/translation/{tr_data.src_lang}-' \
+                   f'{tr_data.trg_lang}/{tr_data.word}'
+
+        @staticmethod
+        def _make_query(tr_data: TranslationData) -> requests.Response:
+            url = ReversoQuery._form_url(tr_data)
+            for _ in range(5):
+                r = requests.get(url, headers=HEADERS)
+                if r:
+                    return r
+                time.sleep(.02)
+
+        @staticmethod
+        def _parse_response(resp: requests.Response, trg_lang: str) -> TranslationResult:
+            soup = BeautifulSoup(resp.content, 'html.parser')
+            words = [span.text.strip() for span in soup.find_all('span', {'class': 'display-term'})]
+            examples = [div.text.strip() for div in soup.find_all('div', {'class': ['src ltr', 'trg ltr']})]
+            ex_tuples = list(zip(examples[::2], examples[1::2]))
+            return TranslationResult(trg_lang.capitalize(), words, ex_tuples)
+
+        @staticmethod
+        def get_translation(tr_data: TranslationData) -> TranslationResult:
+            resp = ReversoQuery._make_query(tr_data)
+            return ReversoQuery._parse_response(resp, tr_data.trg_lang)
+  learner_created: true
+- name: translator/data.py
+  visible: true
+  text: |
+    from dataclasses import dataclass
+    from typing import List, Tuple
+
+
+    @dataclass
+    class TranslationData:
+        src_lang: str
+        trg_lang: str
+        word: str
+
+
+    @dataclass
+    class TranslationResult:
+        target_lang: str
+        words: List[str]
+        examples: List[Tuple[str, str]]
+
+        def __str__(self):
+            words = '\n'.join(w for w in self.words[:5])
+            examples = '\n\n'.join(f'{s1}\n{s2}' for s1, s2 in self.examples[:5])
+            return f"""
+    {self.target_lang} Translations:
+    {words}
+
+    {self.target_lang} Examples:
+    {examples}"""
+  learner_created: true
+- name: miracles.txt
+  visible: true
+  learner_created: true
+- name: translator/arguments.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8974#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Fri, 03 Feb 2023 14:12:38 UTC"
+record: 5

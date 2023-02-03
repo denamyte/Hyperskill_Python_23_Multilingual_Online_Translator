@@ -1,18 +1,15 @@
-from menus import Menus
-from queries import ReversoQuery
-from data import TranslationData
+from arguments import parse_args
+from queries import make_queries
 
 
 def main():
-    menus = Menus()
+    tr_data = parse_args()
+    results = make_queries(tr_data)
 
-    menus.welcome()
-    tr_data = TranslationData(
-        src_lang=menus.choose_first_lang(),
-        trg_lang=menus.choose_second_lang(),
-        word=menus.choose_word()
-    )
-    print(ReversoQuery().get_translation(tr_data))
+    res_str = str(results)
+    with open(f'{tr_data.word}.txt', 'w') as f:
+        f.write(res_str)
+    print(res_str)
 
 
 if __name__ == '__main__':
