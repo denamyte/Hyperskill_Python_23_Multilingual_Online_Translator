@@ -193,6 +193,130 @@ files:
     if __name__ == '__main__':
         TranslatorTest('translator.translator').run_tests()
   learner_created: false
+- name: translator/queries.py
+  visible: true
+  text: |
+    import time
+    from typing import List
+    import requests
+    from bs4 import BeautifulSoup
+
+    from data import TranslationResult, TranslationResults, TranslationData
+
+    HEADERS = {'User-Agent': 'Mozilla/5.0'}
+
+
+    class ReversoQuery:
+        def __init__(self, tr_data: TranslationData, limit: int):
+            self._d = tr_data
+            self._limit = limit
+            self._trg_l = ''
+
+        def _form_url(self) -> str:
+            return f'https://context.reverso.net/translation/{self._d.src_l}-' \
+                   f'{self._trg_l}/{self._d.word}'
+
+        def _make_query(self) -> requests.Response:
+            url = self._form_url()
+            for _ in range(5):
+                r = requests.get(url, headers=HEADERS)
+                if r:
+                    return r
+                time.sleep(.02)
+
+        def _parse_response(self, resp: requests.Response) -> TranslationResult:
+            soup = BeautifulSoup(resp.content, 'html.parser')
+            words = [span.text.strip() for span in soup.find_all(
+                'span', {'class': 'display-term'}, limit=self._limit)]
+            examples = [div.text.strip() for div in soup.find_all(
+                'div', {'class': ['src', 'trg']}, limit=self._limit * 4)]
+            ex_tuples = list(zip(examples[::4], examples[1::4]))
+            return TranslationResult(self._trg_l.capitalize(), words, ex_tuples)
+
+        def _get_translation(self, trg_l):
+            self._trg_l = trg_l
+            return self._parse_response(self._make_query())
+
+        def get_translations(self) -> TranslationResults:
+            return TranslationResults(
+               [self._get_translation(trg_l) for trg_l in self._d.trg_ls]
+            )
+
+
+    def make_queries(tr_data: TranslationData):
+        limit = 5 if len(tr_data.trg_ls) == 1 else 1
+        return ReversoQuery(tr_data, limit).get_translations()
+  learner_created: true
+- name: translator/arguments.py
+  visible: true
+  text: |
+    from argparse import ArgumentParser
+    from data import TranslationData
+
+    LANGUAGES = ['arabic', 'german', 'english', 'spanish', 'french', 'hebrew',
+                 'japanese', 'dutch', 'polish', 'portuguese', 'romanian',
+                 'russian', 'turkish']
+
+
+    def parse_args() -> TranslationData:
+        parser = ArgumentParser()
+        parser.add_argument('src_l')
+        parser.add_argument('trg_l')
+        parser.add_argument('word')
+        args = parser.parse_args()
+        if args.trg_l == 'all':
+            trg_l = LANGUAGES[:]
+            if args.src_l in trg_l:
+                trg_l.remove(args.src_l)
+        else:
+            trg_l = [args.trg_l]
+        return TranslationData(args.src_l, trg_l, args.word)
+  learner_created: true
+- name: translator/data.py
+  visible: true
+  text: |
+    from dataclasses import dataclass
+    from typing import List, Tuple
+
+
+    @dataclass
+    class TranslationData:
+        src_l: str
+        trg_ls: List[str]
+        word: str
+
+
+    @dataclass
+    class TranslationResult:
+        target_lang: str
+        words: List[str]
+        examples: List[Tuple[str, str]]
+
+        def __str__(self):
+            words = '\n'.join(w for w in self.words)
+            examples = '\n\n'.join(f'{s1}\n{s2}' for s1, s2 in self.examples)
+            return f"""\
+    {self.target_lang} Translations:
+    {words}
+
+    {self.target_lang} Examples:
+    {examples}"""
+
+
+    @dataclass
+    class TranslationResults:
+        results: List[TranslationResult]
+
+        def __str__(self):
+            return '\n\n\n'.join(str(res) for res in self.results or [])
+  learner_created: true
+- name: translator/exception.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8976#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: "Sat, 04 Feb 2023 11:37:20 UTC"
 record: -1

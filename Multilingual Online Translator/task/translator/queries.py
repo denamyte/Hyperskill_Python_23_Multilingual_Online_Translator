@@ -1,9 +1,9 @@
 import time
-from typing import List
 import requests
 from bs4 import BeautifulSoup
 
 from data import TranslationResult, TranslationResults, TranslationData
+from exception import InternetConnectionError, CannotFindWordError
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
@@ -22,9 +22,12 @@ class ReversoQuery:
         url = self._form_url()
         for _ in range(5):
             r = requests.get(url, headers=HEADERS)
-            if r:
+            if r.status_code == 404:
+                raise CannotFindWordError(self._d.word)
+            elif r:
                 return r
             time.sleep(.02)
+        raise InternetConnectionError()
 
     def _parse_response(self, resp: requests.Response) -> TranslationResult:
         soup = BeautifulSoup(resp.content, 'html.parser')
@@ -35,7 +38,7 @@ class ReversoQuery:
         ex_tuples = list(zip(examples[::4], examples[1::4]))
         return TranslationResult(self._trg_l.capitalize(), words, ex_tuples)
 
-    def _get_translation(self, trg_l):
+    def _get_translation(self, trg_l) -> TranslationResult:
         self._trg_l = trg_l
         return self._parse_response(self._make_query())
 
@@ -45,6 +48,6 @@ class ReversoQuery:
         )
 
 
-def make_queries(tr_data: TranslationData):
+def make_queries(tr_data: TranslationData) -> TranslationResults:
     limit = 5 if len(tr_data.trg_ls) == 1 else 1
     return ReversoQuery(tr_data, limit).get_translations()
